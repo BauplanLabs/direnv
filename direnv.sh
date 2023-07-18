@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 use_auto_op() {
+    OLDPWD=${1:-$OLDPWD}
     echo "direnv+auto-op: running ${OLDPWD}/.envrc"
 
     envFiles=()
@@ -22,7 +23,7 @@ use_auto_op() {
     # Exit if the array is empty
     if [ ${#envFiles[@]} -eq 0 ]; then
         echo "direnv+auto-op: skipping ${RC_PATH}${DIRENV_USE_FILE} file not found"
-        exit 0
+        return
     fi
     else
     # First user-interaction, let's find all .env & .env-* files
@@ -35,7 +36,7 @@ use_auto_op() {
     # Exit if the array is empty
     if [ ${#envFiles[@]} -eq 0 ]; then
         echo "direnv+auto-op: .env* files not found in ${RC_PATH}"
-        exit 0
+        return
     fi
 
     # Ask the user to pick one if there are multiple files
