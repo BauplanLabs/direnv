@@ -2,7 +2,7 @@
 
 use_auto_op() {
     PWD=`pwd`
-    echo "direnv+auto-op: running ${PWD}/.envrc"
+    echo "direnv+op: running ${PWD}/.envrc"
 
     envFiles=()
 
@@ -20,7 +20,7 @@ use_auto_op() {
 
         # Exit if the array is empty
         if [ ${#envFiles[@]} -eq 0 ]; then
-            echo "direnv+auto-op: skipping ${PWD}${DIRENV_USE_FILE} file not found"
+            echo "direnv+op: skipping ${PWD}${DIRENV_USE_FILE} file not found"
             return
         fi
     else
@@ -33,13 +33,13 @@ use_auto_op() {
 
         # Exit if the array is empty
         if [ ${#envFiles[@]} -eq 0 ]; then
-            echo "direnv+auto-op: .env* files not found in ${PWD}"
+            echo "direnv+op: .env* files not found in ${PWD}"
             return
         fi
 
         # Ask the user to pick one if there are multiple files
         if [ ${#envFiles[@]} -gt 1 ]; then
-            echo "direnv+auto-op: multiple files found in ${PWD}:"
+            echo "direnv+op: multiple files found in ${PWD}:"
             PS3="Please select one: "
             select opt in "${envFiles[@]}"; do
                 if [ "$opt" != "" ]; then
@@ -57,12 +57,12 @@ use_auto_op() {
 
     # check if $selEnvFile exists
     if [[ ! -f "${selEnvFile}" ]]; then
-        echo "direnv+auto-op: file ${selEnvFile} not found"
+        echo "direnv+op: file ${selEnvFile} not found"
         return
     fi
 
     # Now we need to read its content
-    echo "direnv+auto-op: loading $selEnvFile"
+    echo "direnv+op: loading $selEnvFile"
     CONTENT=$(cat "$selEnvFile")
 
     # Using 1password to inject secrets
@@ -79,10 +79,10 @@ use_auto_op() {
     if [[ -z "${prevAWSProfile}" ]] || [[ "${prevAWSProfile}" != "${AWS_PROFILE}" ]]; then
         if [[ ! -z "${AWS_PROFILE}" ]]; then
             if [[ ! -z "${AWS_REGION}" ]]; then
-                echo "direnv+auto-op: assuming role ${AWS_PROFILE} in ${AWS_REGION}"
+                echo "direnv+op: assuming role ${AWS_PROFILE} in ${AWS_REGION}"
                 IFS=' ' source assume ${AWS_PROFILE} --region=${AWS_REGION}
             else
-                echo "direnv+auto-op: assuming role ${AWS_PROFILE}"
+                echo "direnv+op: assuming role ${AWS_PROFILE}"
                 IFS=' ' source assume ${AWS_PROFILE}
             fi
             export _AWS_PROFILE=${AWS_PROFILE}
