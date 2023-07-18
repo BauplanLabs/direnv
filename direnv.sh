@@ -3,6 +3,7 @@
 use_auto_op() {
     OLDPWD=${1:-$OLDPWD}
     echo "direnv+auto-op: running ${OLDPWD}/.envrc"
+    pwd
 
     envFiles=()
 
