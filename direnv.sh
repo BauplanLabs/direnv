@@ -5,6 +5,7 @@ use_auto_op() {
     echo "direnv+op: running ${PWD}/.envrc"
 
     envFiles=()
+    selEnvFiles=()
 
     # Getting the current directory
     if [[ "${PWD}" != */ ]]; then
@@ -15,11 +16,11 @@ use_auto_op() {
     if [[ ! -z "${DIRENV_USE_FILE}" ]]; then
         # Check if the file also in this folder
         if [[ -f "${PWD}${DIRENV_USE_FILE}" ]]; then
-            envFiles+=("${PWD}${DIRENV_USE_FILE}")
+            selEnvFiles+=("${PWD}${DIRENV_USE_FILE}")
         fi
 
         # Exit if the array is empty
-        if [ ${#envFiles[@]} -eq 0 ]; then
+        if [ ${#selEnvFiles[@]} -eq 0 ]; then
             echo "direnv+op: skipping ${PWD}${DIRENV_USE_FILE} file not found"
             return
         fi
@@ -43,27 +44,31 @@ use_auto_op() {
             PS3="Please select one: "
             select opt in "${envFiles[@]}"; do
                 if [ "$opt" != "" ]; then
-                    selEnvFile="$opt"
+                    selEnvFiles=("$opt")
                     break
                 fi
             done
         else
-            selEnvFile="${envFiles[0]}"
+            selEnvFiles=("${envFiles[0]}")
         fi
 
         # Set the selected .env file as the current one
-        export DIRENV_USE_FILE=`basename $selEnvFile`
+        export DIRENV_USE_FILE=`basename ${selEnvFiles[0]}`
     fi
 
     # check if $selEnvFile exists
-    if [[ ! -f "${selEnvFile}" ]]; then
+    if [ ${#selEnvFiles[@]} -eq 0 ]; then
         echo "direnv+op: file ${selEnvFile} not found"
         return
     fi
 
-    # Now we need to read its content
-    echo "direnv+op: loading $selEnvFile"
-    CONTENT=$(cat "$selEnvFile")
+    CONTENT=""
+
+    for selEnvFile in "${selEnvFiles[@]}"; do
+        # Now we need to read its content
+        echo "direnv+op: loading $selEnvFile"
+        CONTENT="${CONTENT} $(cat "$selEnvFile")"
+    done
 
     # Using 1password to inject secrets
     if [[ $CONTENT =~ {{\ *op:\/\/ ]]; then
