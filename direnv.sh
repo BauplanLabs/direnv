@@ -27,8 +27,8 @@ use_auto_op() {
         # We now need to check if the file ${AUTO_OP_HASH} exists on ~/.config/auto_op
         if [[ -f "${AUTO_OP_FILE}" ]]; then
             # If it exists, we need to check if it's older than 4h
-            FILE_AGE=$(($(date +%s) - $(stat -f%c "${AUTO_OP_FILE}")))
-            if [[ $FILE_AGE -gt 14400 ]]; then
+            FILE_AGE=$(($(date +%s) - $(/usr/bin/stat -f%c "${AUTO_OP_FILE}")))
+            if [[ $FILE_AGE -gt 43200 ]]; then
                 # If it's older than 4h, we need to invalidate its content
                 echo "direnv+op: invalidating session ${AUTO_OP_FILE}"
                 rm "${AUTO_OP_FILE}"
